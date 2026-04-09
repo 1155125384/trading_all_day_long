@@ -14,7 +14,7 @@ jobs:
       - name: Checkout personal repo
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          token: ${{ secrets.MY_PAT }}
 
       - name: Download CSV from public repo
         run: |
