@@ -14,7 +14,7 @@ jobs:
       - name: Pushes CSV Only
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.MY_GITHUB_TOKEN }}
+          API_TOKEN_GITHUB: ${{secrets.MY_GITHUB_TOKEN}}
         with:
           source_file: 'etf_data.csv'
           destination_repo: '1155125384/webull_trade_24h'
