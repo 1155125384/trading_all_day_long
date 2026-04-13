@@ -1,7 +1,7 @@
 name: Push CSV to Dashboard Repo
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '0,10,20,30,40,50 * * * *'
   workflow_dispatch: 
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
           # This specifies the EXACT file to move
           source-file: 'etf_data.csv' 
           destination-github-username: '1155125384'
-          destination-repository-name: 'trading_all_day_long'
+          destination-repository-name: 'webull_trade_24h'
           user-email: 1155125384@link.cuhk.edu.hk
           target-branch: main
           # This ensures it stays in the root of the destination repo
