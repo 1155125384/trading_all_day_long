@@ -1,0 +1,26 @@
+name: Push CSV to Dashboard Repo
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: 
+
+jobs:
+  copy-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Pushes CSV Only
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          # This specifies the EXACT file to move
+          source-file: 'etf_data.csv' 
+          destination-github-username: '1155125384'
+          destination-repository-name: 'trading_all_day_long'
+          user-email: 1155125384@link.cuhk.edu.hk
+          target-branch: main
+          # This ensures it stays in the root of the destination repo
+          target-directory: ''
