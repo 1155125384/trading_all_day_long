@@ -11,15 +11,20 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Pushes CSV Only
-        uses: dmnemec/copy_file_to_another_repo_action@main
+      - name: Isolate CSV into a temporary directory
+        run: |
+          mkdir temp_csv_folder
+          cp etf_data.csv temp_csv_folder/
+
+      - name: Push isolated folder to destination
+        uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{secrets.MY_GITHUB_TOKEN}}
+          API_TOKEN_GITHUB: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
-          source_file: 'etf_data.csv'
-          destination_repo: '1155125384/webull_trade_24h'
-          destination_folder: '' 
-          user_email: '1155125384@link.cuhk.edu.hk'
-          user_name: '1155125384'
-          destination_branch: 'main'
-          commit_msg: 'Auto-update ETF data'
+          source-directory: 'temp_csv_folder'
+          destination-github-username: '1155125384'
+          destination-repository-name: 'webull_trade_24h'
+          target-directory: '' 
+          user-email: '1155125384@link.cuhk.edu.hk'
+          target-branch: 'main'
+          commit-message: 'Auto-update ETF data'
