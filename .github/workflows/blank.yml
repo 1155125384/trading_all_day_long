@@ -1,0 +1,36 @@
+name: Hourly ETF Update
+on:
+  schedule:
+    - cron: '0 * * * *' 
+  workflow_dispatch:   # Allows you to run it manually to test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Crucial for saving the CSV back to your repo
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install pandas numpy yfinance tqdm
+
+      - name: Run ETF Script
+        run: python gen_etf_list.py
+
+      - name: Commit and Push CSV
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add etf_data.csv
+          git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
