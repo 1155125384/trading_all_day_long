@@ -1,7 +1,7 @@
 name: Push CSV to Dashboard Repo
 on:
   schedule:
-    - cron: '*/10 * * * *' # Shorter way to write "every 10 minutes"
+    - cron: '*/10 * * * *'
   workflow_dispatch: 
 
 jobs:
@@ -9,20 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to v4 to fix Node.js warning
 
       - name: Pushes CSV Only
-        uses: cpina/github-action-push-to-another-repository@main
+        uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
-          # --- CRITICAL FIXES START HERE ---
-          source-directory: '.'      # Tells the action to look in the root folder
-          source-file: 'etf_data.csv' 
-          # ---------------------------------
-          
-          destination-github-username: '1155125384'
-          destination-repository-name: 'webull_trade_24h'
-          user-email: 1155125384@link.cuhk.edu.hk
-          target-branch: main
-          target-directory: ''
+          source_file: 'etf_data.csv' # Note the underscore _ instead of dash -
+          destination_repo: '1155125384/webull_trade_24h'
+          destination_folder: '' # Root of destination
+          user_email: '1155125384@link.cuhk.edu.hk'
+          user_name: '1155125384'
+          destination_branch: 'main'
+          commit_msg: 'Auto-update ETF data'
