@@ -1,7 +1,7 @@
 name: Push CSV to Dashboard Repo
 on:
   schedule:
-    - cron: '0,10,20,30,40,50 * * * *'
+    - cron: '*/10 * * * *' # Shorter way to write "every 10 minutes"
   workflow_dispatch: 
 
 jobs:
@@ -16,11 +16,13 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
-          # This specifies the EXACT file to move
+          # --- CRITICAL FIXES START HERE ---
+          source-directory: '.'      # Tells the action to look in the root folder
           source-file: 'etf_data.csv' 
+          # ---------------------------------
+          
           destination-github-username: '1155125384'
           destination-repository-name: 'webull_trade_24h'
           user-email: 1155125384@link.cuhk.edu.hk
           target-branch: main
-          # This ensures it stays in the root of the destination repo
           target-directory: ''
