@@ -362,5 +362,10 @@ df_final = df_final.sort_values(by=['Momentum_Score','Total_Score','Cum_Buy_%'],
 # Display the updated DataFrame with the new column
 print(df_final.to_string())
 
-print("\nSaving final results to 'etf_data.csv'...")
-df_final.to_csv('etf_data.csv', index=False)
+if not df_final.empty:
+    print("\nSaving final results to 'etf_data.csv'...")
+    df_final.to_csv('etf_data.csv', index=False)
+    print("File saved successfully.")
+else:
+    print("DataFrame is empty; no file was created.")
+
