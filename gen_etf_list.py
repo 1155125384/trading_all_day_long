@@ -271,7 +271,7 @@ column_order = [
 
 df = df[column_order]
 df = df.sort_values(by=['Total_Score','Cum_Buy_%'], ascending=False).reset_index(drop=True)
-df_filtered = df[df['Total_Score'] >= 45].copy()
+df_filtered = df[df['Total_Score'] >= 55].copy()
 
 print(df_filtered.to_string())
 
