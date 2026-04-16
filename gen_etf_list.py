@@ -271,7 +271,7 @@ column_order = [
 
 df = df[column_order]
 df = df.sort_values(by=['Total_Score','Cum_Buy_%'], ascending=False).reset_index(drop=True)
-df_filtered = df[df['Total_Score'] >= 55].copy()
+df_filtered = df[df['Total_Score'] >= 50].copy()
 
 print(df_filtered.to_string())
 
@@ -292,7 +292,7 @@ def get_swing_score(ticker_symbol):
         history_df = ticker.history(period="60d")
         
         # Guard clause in case data is missing
-        if history_df.empty or len(history_df) < 30:
+        if history_df.empty:
             return np.nan
 
         # Calculate indicators
