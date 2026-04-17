@@ -7,23 +7,39 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; padding: 2rem; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; padding: 2rem; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; }
         .header-title { color: #38bdf8; font-weight: 800; border-left: 5px solid #38bdf8; padding-left: 15px; margin-bottom: 2rem; }
         
-        /* Table Customization */
-        .table { border-color: #334155; }
-        .table thead th { background-color: #0f172a; color: #94a3b8; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border-bottom: 2px solid #38bdf8; }
-        .table tbody td { border-bottom: 1px solid #334155; vertical-align: middle; }
+        /* DARK MODE TABLE FIXES */
+        .table { border-color: #334155; color: #f1f5f9 !important; }
+        .table thead th { background-color: #0f172a !important; color: #94a3b8 !important; border-bottom: 2px solid #38bdf8; }
         .ticker-cell { font-weight: 700; color: #38bdf8; }
-        
-        /* Indicators */
-        .score-high { color: #4ade80; background: rgba(74, 222, 128, 0.1); border-radius: 4px; padding: 2px 6px; }
-        .score-low { color: #f87171; background: rgba(248, 113, 113, 0.1); border-radius: 4px; padding: 2px 6px; }
-        
-        /* DataTables overrides */
-        .dataTables_wrapper .dataTables_filter input { background-color: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; padding: 5px 15px; }
-        .dataTables_info, .paginate_button { font-size: 0.85rem; color: #94a3b8 !important; }
+
+        /* DATATABLES UI FIXES (Text Visibility) */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: #0f172a !important;
+            color: #fff !important;
+            border: 1px solid #334155 !important;
+        }
+        .dataTables_wrapper .dataTables_info { color: #94a3b8 !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { color: #fff !important; }
+        .page-item.disabled .page-link { background-color: #1e293b; border-color: #334155; color: #475569; }
+        .page-link { background-color: #0f172a; border-color: #334155; color: #38bdf8; }
+        .page-item.active .page-link { background-color: #38bdf8; border-color: #38bdf8; color: #0f172a; }
+
+        /* SPECIFIC TRADER COLOR LOGIC */
+        /* Total Score: Rounded Box */
+        .box-green { background-color: #15803d; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
+        .box-yellow { background-color: #a16207; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
+        .box-red { background-color: #b91c1c; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
+
+        /* Text only colors */
+        .text-green { color: #4ade80 !important; font-weight: 600; }
+        .text-yellow { color: #facc15 !important; font-weight: 600; }
+        .text-red { color: #f87171 !important; font-weight: 600; }
+
         .loading-overlay { text-align: center; padding: 50px; }
     </style>
 </head>
@@ -35,7 +51,7 @@
         
         <div id="loading" class="loading-overlay">
             <div class="spinner-border text-info" role="status"></div>
-            <p class="mt-2">Fetching etf_data.csv from server...</p>
+            <p class="mt-2">Fetching live market data...</p>
         </div>
 
         <div class="table-responsive">
@@ -52,10 +68,6 @@
                         <th>1h Buy</th>
                         <th>6h Buy</th>
                         <th>1d Buy</th>
-                        <th>3d Buy</th>
-                        <th>ST Trend</th>
-                        <th>MT Trend</th>
-                        <th>LT Trend</th>
                         <th>Avg Vol</th>
                     </tr>
                 </thead>
@@ -70,54 +82,62 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+// Logic to determine color based on value
+function getStatusColor(val) {
+    const n = parseFloat(val);
+    if (n >= 65) return 'green';
+    if (n >= 55) return 'yellow';
+    return 'red';
+}
+
 async function initDashboard() {
     try {
-        // 1. Fetch the CSV from GitHub Pages / Relative path
         const response = await fetch('etf_data.csv');
         if (!response.ok) throw new Error('Could not find etf_data.csv');
         const data = await response.text();
 
-        // 2. Parse CSV Data
-        const lines = data.trim().split('\n');
-        const headers = lines[0].split(',');
-        const rows = lines.slice(1);
-
+        const rows = data.trim().split('\n').slice(1);
         let html = '';
+
         rows.forEach(line => {
             const cols = line.split(',');
-            if (cols.length < 10) return; // Skip empty/malformed lines
+            if (cols.length < 10) return;
 
-            const getStyle = (val) => parseFloat(val) > 60 ? 'score-high' : (parseFloat(val) < 55 ? 'score-low' : '');
+            const [ticker, total, mom, grade, peakM, cumB, price, b1h, b6h, b1d, b3d, st, mt, lt, vol] = cols;
+            
+            const totalColor = getStatusColor(total);
+            const momColor = getStatusColor(mom);
+            const gradeColor = getStatusColor(grade);
+            const peakColor = getStatusColor(peakM);
+            const cumBColor = getStatusColor(cumB);
 
             html += `<tr>
-                <td class="ticker-cell">${cols[0]}</td>
-                <td><span class="${getStyle(cols[1])}">${cols[1]}</span></td>
-                <td><span class="${getStyle(cols[2])}">${cols[2]}</span></td>
-                <td>${cols[3]}</td>
-                <td>${cols[4]}</td>
-                <td>${cols[5]}%</td>
-                <td>$${parseFloat(cols[6]).toFixed(2)}</td>
-                <td>${cols[7]}%</td>
-                <td>${cols[8]}%</td>
-                <td>${cols[9]}%</td>
-                <td>${cols[10]}%</td>
-                <td>${cols[11]}</td>
-                <td>${cols[12]}</td>
-                <td>${cols[13]}</td>
-                <td>${parseInt(cols[14]).toLocaleString()}</td>
+                <td class="ticker-cell">${ticker}</td>
+                <td><span class="box-${totalColor}">${total}</span></td>
+                <td class="text-${momColor}">${mom}</td>
+                <td class="text-${gradeColor}">${grade}</td>
+                <td class="text-${peakColor}">${peakM}</td>
+                <td class="text-${cumBColor}">${cumB}%</td>
+                <td>$${parseFloat(price).toFixed(2)}</td>
+                <td>${b1h}%</td>
+                <td>${b6h}%</td>
+                <td>${b1d}%</td>
+                <td>${parseInt(vol).toLocaleString()}</td>
             </tr>`;
         });
 
-        // 3. Inject and Initialize Table
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('loading').style.display = 'none';
-        const table = document.getElementById('etfTable');
-        table.style.display = 'table';
+        document.getElementById('etfTable').style.display = 'table';
 
         $('#etfTable').DataTable({
-            order: [[1, 'desc']], // Sort by Total Score
-            pageLength: 15,
-            language: { search: "_INPUT_", searchPlaceholder: "Search Ticker..." }
+            order: [[1, 'desc']],
+            pageLength: 25,
+            language: { 
+                search: "_INPUT_", 
+                searchPlaceholder: "Search Ticker...",
+                lengthMenu: "Show _MENU_ entries"
+            }
         });
 
     } catch (err) {
