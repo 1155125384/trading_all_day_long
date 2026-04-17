@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pandas numpy yfinance tqdm
+          pip install pandas numpy yfinance tqdm ssl
 
       - name: Run ETF Script
         run: python gen_etf_list.py
