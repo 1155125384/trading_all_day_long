@@ -509,7 +509,6 @@ df_final['Total_Score'] = (
 )
 
 df_final['Total_Score'] = df_final['Total_Score'].round(2)
-df_final = df_final[df_final['Total_Score'] > 50].copy()
 
 column_order = [
     'Ticker', 'Total_Score', 'Momentum_Score', 'Grading', 'Peak_Mark', 
