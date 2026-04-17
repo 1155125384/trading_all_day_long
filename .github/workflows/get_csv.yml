@@ -1,7 +1,7 @@
 name: Hourly ETF Update
 on:
   schedule:
-    - cron: '*/5 * * * *' 
+    - cron: '* * * * *' 
   workflow_dispatch:   # Allows you to run it manually to test
 
 jobs:
