@@ -309,7 +309,7 @@ def process_single_ticker(ticker):
     try:
         # Add a tiny random delay (0.1 to 0.7 seconds) to stagger the network requests.
         # This prevents Yahoo Finance from flagging us as a DDoS bot.
-        time.sleep(random.uniform(0.1, 0.7))
+        time.sleep(random.uniform(2, 5))
         
         analyzer = ETFAnalyzer(ticker)
         short = analyzer.get_short_term_score()
