@@ -3,59 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Alpha Analytics - Live Dashboard</title>
+    <title>Pro Alpha Terminal | Column Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; padding: 2rem; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; }
-        .header-title { color: #38bdf8; font-weight: 800; border-left: 5px solid #38bdf8; padding-left: 15px; margin-bottom: 2rem; }
-        
-        /* DARK MODE TABLE FIXES */
-        .table { border-color: #334155; color: #f1f5f9 !important; }
-        .table thead th { background-color: #0f172a !important; color: #94a3b8 !important; border-bottom: 2px solid #38bdf8; }
-        .ticker-cell { font-weight: 700; color: #38bdf8; }
-
-        /* DATATABLES UI FIXES (Text Visibility) */
-        .dataTables_wrapper .dataTables_length select,
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: #0f172a !important;
-            color: #fff !important;
-            border: 1px solid #334155 !important;
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --primary-blue: #38bdf8;
+            --text-main: #f1f5f9;
         }
-        .dataTables_wrapper .dataTables_info { color: #94a3b8 !important; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button { color: #fff !important; }
-        .page-item.disabled .page-link { background-color: #1e293b; border-color: #334155; color: #475569; }
-        .page-link { background-color: #0f172a; border-color: #334155; color: #38bdf8; }
-        .page-item.active .page-link { background-color: #38bdf8; border-color: #38bdf8; color: #0f172a; }
 
-        /* SPECIFIC TRADER COLOR LOGIC */
-        /* Total Score: Rounded Box */
-        .box-green { background-color: #15803d; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
-        .box-yellow { background-color: #a16207; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
-        .box-red { background-color: #b91c1c; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 1.5rem; }
+        .card { background-color: var(--card-bg); border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; }
+        .header-title { color: var(--primary-blue); font-weight: 800; border-left: 5px solid var(--primary-blue); padding-left: 15px; margin-bottom: 1.5rem; }
+        
+        /* Column Control Panel */
+        .control-panel { background: #0f172a; border-radius: 8px; padding: 15px; margin-bottom: 20px; border: 1px solid #38bdf8; }
+        .btn-group-toggle .btn { font-size: 0.75rem; margin-bottom: 5px; border-color: #334155; color: #94a3b8; }
+        .btn-group-toggle .btn:hover { color: #38bdf8; border-color: #38bdf8; }
+        .btn-group-toggle .btn.active { background-color: #38bdf8; color: #0f172a; font-weight: bold; }
 
-        /* Text only colors */
+        /* Table Styling */
+        .table { color: var(--text-main) !important; }
+        .table thead th { background-color: #0f172a !important; color: #94a3b8 !important; font-size: 0.8rem; border-bottom: 2px solid var(--primary-blue); }
+        .ticker-cell { font-weight: 700; color: var(--primary-blue); }
+
+        /* Score Logic */
+        .box-green { background-color: #166534; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
+        .box-yellow { background-color: #854d0e; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
+        .box-red { background-color: #991b1b; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
         .text-green { color: #4ade80 !important; font-weight: 600; }
         .text-yellow { color: #facc15 !important; font-weight: 600; }
         .text-red { color: #f87171 !important; font-weight: 600; }
 
-        .loading-overlay { text-align: center; padding: 50px; }
+        /* DataTable visibility fixes */
+        .dataTables_wrapper .dataTables_length select, .dataTables_wrapper .dataTables_filter input {
+            background-color: var(--bg-dark) !important; color: #fff !important; border: 1px solid #334155 !important;
+        }
+        .dataTables_info, .dataTables_paginate { color: #94a3b8 !important; }
+        .page-link { background-color: var(--bg-dark); color: var(--primary-blue); border-color: #334155; }
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="card">
-        <h2 class="header-title">ETF MOMENTUM & ALPHA ANALYTICS</h2>
-        
-        <div id="loading" class="loading-overlay">
-            <div class="spinner-border text-info" role="status"></div>
-            <p class="mt-2">Fetching live market data...</p>
+        <h2 class="header-title">PRO ALPHA TERMINAL</h2>
+
+        <div class="control-panel">
+            <h6 class="mb-3 text-uppercase" style="color:#38bdf8; font-size: 0.8rem;">Column Visibility Controls</h6>
+            <div class="mb-3">
+                <span class="me-2 text-muted small">Quick Groups:</span>
+                <button class="btn btn-sm btn-outline-info" onclick="toggleGroup('scores')">Scores Only</button>
+                <button class="btn btn-sm btn-outline-info" onclick="toggleGroup('trends')">Trends Only</button>
+                <button class="btn btn-sm btn-outline-info" onclick="toggleGroup('all')">Show All</button>
+            </div>
+            <div id="colToggleButtons" class="btn-group-toggle d-flex flex-wrap gap-1">
+                </div>
+        </div>
+
+        <div id="loading" class="text-center py-4">
+            <div class="spinner-border text-info"></div>
         </div>
 
         <div class="table-responsive">
-            <table id="etfTable" class="table table-dark table-hover" style="width:100%; display:none;">
+            <table id="etfTable" class="table table-dark table-hover w-100" style="display:none;">
                 <thead>
                     <tr>
                         <th>Ticker</th>
@@ -65,10 +78,14 @@
                         <th>Peak Mark</th>
                         <th>Cum Buy %</th>
                         <th>Price</th>
-                        <th>1h Buy</th>
-                        <th>6h Buy</th>
-                        <th>1d Buy</th>
+                        <th>1h %</th>
+                        <th>6h %</th>
+                        <th>1d %</th>
+                        <th>Short</th>
+                        <th>Med</th>
+                        <th>Long</th>
                         <th>Avg Vol</th>
+                        <th>Peak Pr.</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -82,47 +99,42 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-// Logic to determine color based on value
-function getStatusColor(val) {
+let dataTable;
+
+function getScoreStyle(val, isBox) {
     const n = parseFloat(val);
-    if (n >= 65) return 'green';
-    if (n >= 55) return 'yellow';
-    return 'red';
+    let type = n >= 65 ? 'green' : (n >= 55 ? 'yellow' : 'red');
+    return isBox ? `box-${type}` : `text-${type}`;
 }
 
 async function initDashboard() {
     try {
         const response = await fetch('etf_data.csv');
-        if (!response.ok) throw new Error('Could not find etf_data.csv');
         const data = await response.text();
-
         const rows = data.trim().split('\n').slice(1);
         let html = '';
 
         rows.forEach(line => {
             const cols = line.split(',');
-            if (cols.length < 10) return;
-
-            const [ticker, total, mom, grade, peakM, cumB, price, b1h, b6h, b1d, b3d, st, mt, lt, vol] = cols;
-            
-            const totalColor = getStatusColor(total);
-            const momColor = getStatusColor(mom);
-            const gradeColor = getStatusColor(grade);
-            const peakColor = getStatusColor(peakM);
-            const cumBColor = getStatusColor(cumB);
+            if (cols.length < 15) return;
+            const [ticker, total, mom, grade, peakM, cumB, price, b1h, b6h, b1d, b3d, st, mt, lt, vol, peakP] = cols;
 
             html += `<tr>
                 <td class="ticker-cell">${ticker}</td>
-                <td><span class="box-${totalColor}">${total}</span></td>
-                <td class="text-${momColor}">${mom}</td>
-                <td class="text-${gradeColor}">${grade}</td>
-                <td class="text-${peakColor}">${peakM}</td>
-                <td class="text-${cumBColor}">${cumB}%</td>
+                <td><span class="${getScoreStyle(total, true)}">${total}</span></td>
+                <td class="${getScoreStyle(mom, false)}">${mom}</td>
+                <td class="${getScoreStyle(grade, false)}">${grade}</td>
+                <td class="${getScoreStyle(peakM, false)}">${peakM}</td>
+                <td class="${getScoreStyle(cumB, false)}">${cumB}%</td>
                 <td>$${parseFloat(price).toFixed(2)}</td>
                 <td>${b1h}%</td>
                 <td>${b6h}%</td>
                 <td>${b1d}%</td>
+                <td>${st}</td>
+                <td>${mt}</td>
+                <td>${lt}</td>
                 <td>${parseInt(vol).toLocaleString()}</td>
+                <td>$${parseFloat(peakP).toFixed(2)}</td>
             </tr>`;
         });
 
@@ -130,19 +142,56 @@ async function initDashboard() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('etfTable').style.display = 'table';
 
-        $('#etfTable').DataTable({
+        dataTable = $('#etfTable').DataTable({
             order: [[1, 'desc']],
             pageLength: 25,
-            language: { 
-                search: "_INPUT_", 
-                searchPlaceholder: "Search Ticker...",
-                lengthMenu: "Show _MENU_ entries"
-            }
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            language: { search: "", searchPlaceholder: "Search Ticker..." }
         });
 
+        setupColumnControls();
+
     } catch (err) {
-        document.getElementById('loading').innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+        console.error(err);
     }
+}
+
+function setupColumnControls() {
+    const container = document.getElementById('colToggleButtons');
+    dataTable.columns().every(function() {
+        const column = this;
+        const header = column.header().innerText;
+        const btn = document.createElement('button');
+        btn.innerHTML = header;
+        btn.className = 'btn btn-sm btn-outline-secondary active';
+        btn.onclick = function() {
+            const visible = column.visible();
+            column.visible(!visible);
+            this.classList.toggle('active', !visible);
+        };
+        container.appendChild(btn);
+    });
+}
+
+function toggleGroup(type) {
+    const scoreIdx = [1, 2, 3, 4, 5];
+    const trendIdx = [10, 11, 12, 13];
+    const allIdx = Array.from({length: 15}, (_, i) => i);
+
+    // Hide all first
+    dataTable.columns().visible(false);
+    
+    let toShow = [0, 6]; // Always keep Ticker and Price
+    if (type === 'scores') toShow = toShow.concat(scoreIdx);
+    else if (type === 'trends') toShow = toShow.concat(trendIdx);
+    else toShow = allIdx;
+
+    dataTable.columns(toShow).visible(true);
+    
+    // Update button states
+    $('#colToggleButtons button').each(function(index) {
+        $(this).toggleClass('active', dataTable.column(index).visible());
+    });
 }
 
 initDashboard();
