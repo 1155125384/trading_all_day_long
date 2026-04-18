@@ -103,7 +103,7 @@ let dataTable;
 
 function getScoreStyle(val, isBox) {
     const n = parseFloat(val);
-    let type = n >= 65 ? 'green' : (n >= 55 ? 'yellow' : 'red');
+    let type = n >= 65 ? 'green' : (n >= 50 ? 'orange' : (n>=40?'yellow':'red'));
     return isBox ? `box-${type}` : `text-${type}`;
 }
 
