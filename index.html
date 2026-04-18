@@ -103,9 +103,23 @@ let dataTable;
 
 function getScoreStyle(val, isBox) {
     const n = parseFloat(val);
-    let type = n >= 65 ? 'green' : (n >= 50 ? 'orange' : (n>=40?'yellow':'red'));
+    let type;
+
+    if (n >= 70) {
+        type = 'green';       // Excellent
+    } else if (n >= 60) {
+        type = 'lightgreen';  // Good
+    } else if (n >= 50) {
+        type = 'yellow';      // Average (middle)
+    } else if (n >= 40) {
+        type = 'orange';      // Poor
+    } else {
+        type = 'red';         // Very poor
+    }
+
     return isBox ? `box-${type}` : `text-${type}`;
 }
+
 
 async function initDashboard() {
     try {
