@@ -305,24 +305,35 @@ class ETFAnalyzer:
 df = final_report.copy()
 print("Phase 3/4: Grading for ETFs...")
 
-def process_single_ticker(ticker):
-    try:
-        # Add a tiny random delay (0.1 to 0.7 seconds) to stagger the network requests.
-        # This prevents Yahoo Finance from flagging us as a DDoS bot.
-        time.sleep(random.uniform(2, 5))
-        
-        analyzer = ETFAnalyzer(ticker)
-        short = analyzer.get_short_term_score()
-        med = analyzer.get_medium_term_score()
-        long_t = analyzer.get_long_term_score()
-        total = round((short * 0.35) + (med * 0.35) + (long_t * 0.3), 2)
-        
-        return ticker, total, short, med, long_t
-        
-    except Exception as e:
-        # CRITICAL FIX: We are now printing the exact error so it isn't hidden from you
-        print(f"\n[!] Error processing {ticker}: {e}")
-        return ticker, np.nan, np.nan, np.nan, np.nan
+def process_single_ticker(ticker, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            # Base delay to prevent initial spam
+            time.sleep(random.uniform(2, 5))
+            
+            analyzer = ETFAnalyzer(ticker)
+            short = analyzer.get_short_term_score()
+            med = analyzer.get_medium_term_score()
+            long_t = analyzer.get_long_term_score()
+            total = round((short * 0.35) + (med * 0.35) + (long_t * 0.3), 2)
+            
+            return ticker, total, short, med, long_t
+            
+        except Exception as e:
+            error_msg = str(e)
+            # Check if it's a rate limit error
+            if "Too Many Requests" in error_msg or "Rate limited" in error_msg or "429" in error_msg:
+                wait_time = (attempt + 1) * 20  # Wait 15s, then 30s, then 45s
+                print(f"\n[!] Rate limited on {ticker} (Attempt {attempt + 1}/{max_retries}). Waiting {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                # If it's a different error (e.g., delisted ticker), print and break
+                print(f"\n[!] Error processing {ticker}: {error_msg}")
+                break 
+                
+    # If we exhaust all retries or hit a non-recoverable error, return NaNs
+    print(f"\n[X] Failed to process {ticker} after {max_retries} attempts.")
+    return ticker, np.nan, np.nan, np.nan, np.nan
 
 results_map = {}
 
