@@ -122,7 +122,7 @@ def analyze_etf_momentum_pipeline(ticker_list, batch_size=20):
                 cum_score = (m60 * 0.20) + (h3 * 0.30) + (h6 * 0.30) + (d1 * 0.10) + (d3 * 0.10)
 
                 # Gate: Immediate 5m momentum must still be strong (65%)
-                if cum_score < to 50: return None
+                if cum_score < 50: return None
 
                 # 2) Last Peak Price & Mark Calculation (1 Year lookback, excluding last 7 days)
                 current_price = df1d['Close'].iloc[-1]
