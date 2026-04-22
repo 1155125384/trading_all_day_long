@@ -121,8 +121,8 @@ def analyze_etf_momentum_pipeline(ticker_list, batch_size=20):
                 # Cumulative Momentum Score Weights
                 cum_score = (m60 * 0.20) + (h3 * 0.30) + (h6 * 0.30) + (d1 * 0.10) + (d3 * 0.10)
 
-                # Gate: Immediate 5m momentum must still be strong (65%)
-                if cum_score < 50: return None
+                # Gate: Immediate 5m momentum must still be strong (40%)
+                if cum_score < 40: return None
 
                 # 2) Last Peak Price & Mark Calculation (1 Year lookback, excluding last 7 days)
                 current_price = df1d['Close'].iloc[-1]
@@ -134,8 +134,6 @@ def analyze_etf_momentum_pipeline(ticker_list, batch_size=20):
                 peak_mark = round(max(0, min(100, raw_peak_mark)), 2)
 
                 # --- NEW: Exclude anything with a Peak Mark of 30 or lower ---
-                if peak_mark <= 30:
-                    return None
 
                 return {
                     'Ticker': ticker,
@@ -373,7 +371,7 @@ print(f"Rows with successful Grading: {df['Grading'].notna().sum()}")
 df = df.sort_values(by=['Grading'], ascending=False).reset_index(drop=True)
 
 # Keep the original DataFrame intact for debugging, filter into a new one
-df_filtered = df[df['Grading'] >= 45].copy()
+df_filtered = df[df['Grading'] >= 40].copy()
 
 if df_filtered.empty:
     print("\n[!] The filtered DataFrame is still empty. Look at the printed errors above to see what failed.")
