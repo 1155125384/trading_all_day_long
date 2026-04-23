@@ -122,7 +122,7 @@ for i in range(1):
                     cum_score = (m60 * 0.20) + (h3 * 0.30) + (h6 * 0.30) + (d1 * 0.10) + (d3 * 0.10)
     
                     # Gate: Immediate 5m momentum must still be strong (40%)
-                    if cum_score < 40: return None
+                    if cum_score < 45: return None
     
                     # 2) Last Peak Price & Mark Calculation (1 Year lookback, excluding last 7 days)
                     current_price = df1d['Close'].iloc[-1]
