@@ -1,7 +1,7 @@
 name: Hourly ETF Update
 on:
   schedule:
-    - cron: '0 0,6,12,18 * * *' 
+    - cron: '0 * * * *' 
   workflow_dispatch:   # Allows you to run it manually to test
 
 jobs:
@@ -34,3 +34,54 @@ jobs:
           git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
           git pull --rebase origin main
           git push
+
+      - name: Run ETF Script (2nd)
+        run: python gen_etf_list.py
+
+      - name: Commit and Push CSV (2nd)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add etf_data.csv
+          git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
+
+      - name: Run ETF Script (3rd)
+        run: python gen_etf_list.py
+
+      - name: Commit and Push CSV (3rd)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add etf_data.csv
+          git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
+
+      - name: Run ETF Script (4th)
+        run: python gen_etf_list.py
+
+      - name: Commit and Push CSV (4th)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add etf_data.csv
+          git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
+
+      - name: Run ETF Script (5th)
+        run: python gen_etf_list.py
+
+      - name: Commit and Push CSV (5th)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add etf_data.csv
+          git commit -m "Auto-update ETF list: $(date)" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
+
+
+          
