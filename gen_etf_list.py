@@ -12,7 +12,7 @@ import concurrent.futures
 import random
 import ssl
 
-for i in range(100):
+for i in range(1):
     
     def get_complete_us_etf_list():
         ssl._create_default_https_context = ssl._create_unverified_context
