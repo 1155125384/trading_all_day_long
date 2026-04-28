@@ -507,8 +507,8 @@ momentum_scores_dict = process_scoring(ticker_list, df_final)
 # Map the scores back to the dataframe
 df_final['Momentum_Score'] = df_final['Ticker'].map(momentum_scores_dict)
 
-WEIGHT_MOMENTUM = 0.55
-WEIGHT_GRADING = 0.35
+WEIGHT_MOMENTUM = 0.40
+WEIGHT_GRADING = 0.50
 WEIGHT_PEAK = 0.10
 
 df_final['Total_Score'] = (
